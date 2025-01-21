@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor-Patient Voice Capture</title>
+</head>
+<body>
+    <h2>Doctor-Patient Voice Capture</h2>
+    <button id="startBtn">Start Recording</button>
+    <button id="stopBtn" disabled>Stop Recording</button>
+    <audio id="audioPlayer" controls></audio>
+    <p id="transcription"></p>
+    <p id="summary"></p>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        document.getElementById("startBtn").addEventListener("click", () => {
+            audioChunks = [];
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                document.getElementById("startBtn").disabled = true;
+                document.getElementById("stopBtn").disabled = false;
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+            });
+        });
+
+        document.getElementById("stopBtn").addEventListener("click", () => {
+            mediaRecorder.stop();
+            document.getElementById("startBtn").disabled = false;
+            document.getElementById("stopBtn").disabled = true;
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                const formData = new FormData();
+                formData.append("file", audioBlob, "voice-input.wav");
+
+            //     fetch("http://localhost:8000/process_voice", {
+            //         method: "POST",
+            //         body: formData
+            //     })
+            //     .then(response => {
+            //     if (!response.ok) {
+            //         throw new Error(`HTTP error! status: ${response.status}`);
+            //     }
+            //     return response.json();
+            // })
+            // .then(data => {
+            //     console.log("Response Data:", data); // Debugging: Log the response to the console
+                
+            //     // Update HTML elements with response data
+            //     document.getElementById("audioPlayer").src = URL.createObjectURL(audioBlob);
+            //     document.getElementById("transcription").innerText = "Transcription: " + (data.transcription || "No transcription available.");
+            //     document.getElementById("summary").innerText = "Summary: " + (data.summary || "No summary available.");
+            // })
+            // .catch(error => {
+            //     console.error("Error processing audio:", error); // Log errors
+            // });
+
+                fetch("http://localhost:8000/process_voice", {
+                method: "POST",
+                body: formData
+                })
+                .then(response => {
+                if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json(); // Parse JSON
+                })
+                .then(data => {
+                console.log("Response received:", data); // Debug response
+                if (data.error) {
+                document.getElementById("transcription").innerText = `Error: ${data.error}`;
+                } else {
+                // Update HTML with API response
+                document.getElementById("audioPlayer").src = URL.createObjectURL(audioBlob);
+                document.getElementById("transcription").innerText = `Transcription: ${data.transcription || "No transcription received."}`;
+                document.getElementById("summary").innerText = `Summary: ${data.summary || "No summary received."}`;
+                }
+                })
+                .catch(error => {
+                console.error("Error in API call:", error); // Debug frontend errors
+                document.getElementById("transcription").innerText = "Error fetching data.";
+                });
+
+              
+            };
+        });
+    </script>
+</body>
+</html>
