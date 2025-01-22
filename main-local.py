@@ -20,7 +20,6 @@ app.add_middleware(
 )
 
 @app.post("/process_voice")
-
 async def process_voice(file: UploadFile = File(...)):
     file_path = os.path.abspath(f"./{file.filename}")  # Use absolute path for better file handling
 
@@ -63,12 +62,11 @@ async def process_voice(file: UploadFile = File(...)):
         return {"error": str(e)}
 
 def summarize_groq_ollama(text):
-
     llm = ChatGroq(
-    temperature=0, 
-    groq_api_key='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', 
-    model_name="llama-3.1-70b-versatile")
-
+        temperature=0, 
+        groq_api_key='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', 
+        model_name="llama-3.1-70b-versatile"
+    )
     response = llm.invoke(text)
     return response.content
 
@@ -120,7 +118,6 @@ def transcribe_and_translate_audio_with_groq(audio_file, target_language="en", a
             print(f"Transcription completed: {transcription}")
 
             # Step 2: Translation
-            # Re-upload the file for translation if required
             file.seek(0)  # Reset file pointer for re-upload
 
             translation_response = requests.post(translation_url, headers=headers, files=files)
@@ -134,23 +131,15 @@ def transcribe_and_translate_audio_with_groq(audio_file, target_language="en", a
 
             print(f"Translation completed: {translation}")
 
-            # Properly construct the final result
-            # result = {
-            #     "transcription": transcription,
-            #     "translation": translation
-            # }
-            print(translation)
             return translation
 
     except Exception as e:
         print(f"Error during transcription or translation: {str(e)}")
         return {"error": str(e)}
 
-
 @app.get("/")
 def root():
     return {"message": "Doctor-Patient Voice Processing Backend"}
-
 
 # Example to verify Whisper and FFmpeg configurations
 def verify_ffmpeg_installation():
@@ -161,8 +150,5 @@ def verify_ffmpeg_installation():
         else:
             print("FFmpeg is not installed or not configured properly.")
             print(result.stderr)
-    except FileNotFoundError:
-        print("FFmpeg is not found. Please install it and ensure it's in your PATH.")
-
-# Run this verification during startup
-verify_ffmpeg_installation()
+    except Exception as e:
+        print(f"Error during FFmpeg verification: {str(e)}")
