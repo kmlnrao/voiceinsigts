@@ -9,3 +9,4 @@ whisper==1.1.10
 ffmpeg        # For OpenAI's Whisper library (if you use the local version)
 ffmpeg-python==0.2.0      # For FFmpeg support in Python
 pydantic==1.10
+streamlit
