@@ -1,4 +1,4 @@
-fastapi==0.95.0           # For building the API
+fastapi==0.95.2         # For building the API
 uvicorn==0.22.0           # For running FastAPI applications
 python-multipart==0.0.6   # For handling file uploads in FastAPI
 requests==2.31.0          # For making HTTP requests
@@ -12,6 +12,5 @@ pydantic==1.10
 streamlit
 fastapi==0.95.2 
 pydantic==1.10.9
-fastapi==0.100.0 
 pydantic==2.0.0
 python3.11
