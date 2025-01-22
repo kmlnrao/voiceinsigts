@@ -5,5 +5,8 @@ requests==2.31.0          # For making HTTP requests
 langchain_groq==0.1.0     # For Groq AI integration (ensure this matches the package used)
 aiofiles==23.1.0          # For asynchronous file operations in FastAPI
 openai==0.27.8            # For using OpenAI Whisper APIs
-whisper==1.1.10           # For OpenAI's Whisper library (if you use the local version)
+whisper==1.1.10   
+ffmpeg        # For OpenAI's Whisper library (if you use the local version)
 ffmpeg-python==0.2.0      # For FFmpeg support in Python
+pydantic==1.10
+--upgrade langchain-groq
